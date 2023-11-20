@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.todomeet.databinding.FragmentHomeBinding;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+
 
 public class HomeFragment extends Fragment {
 
@@ -24,9 +27,10 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        MaterialCalendarView calendarView = binding.calendarView;
+      calendarView.setSelectedDate(CalendarDay.today());
         return root;
+
     }
 
     @Override
