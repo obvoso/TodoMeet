@@ -1,11 +1,13 @@
 package com.example.todomeet.ui.profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,12 +18,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.todomeet.R;
+import com.example.todomeet.login.LoginActivity;
+import com.kakao.sdk.user.UserApiClient;
 
 public class ProfileFragment extends Fragment {
 
     private ImageView profileImageView;
     private TextView userNickname;
     private TextView userEmail;
+    private Button signoutButton;
 
     @Nullable
     @Override
@@ -30,6 +35,7 @@ public class ProfileFragment extends Fragment {
         profileImageView = view.findViewById(R.id.profileImageView);
         userNickname = view.findViewById(R.id.userNickname);
         userEmail = view.findViewById(R.id.userEmail);
+        signoutButton = view.findViewById(R.id.signoutButton);
         return view;
     }
 
@@ -49,6 +55,22 @@ public class ProfileFragment extends Fragment {
 
         userNickname.setText(userName);
         userEmail.setText(email);
+
+        signoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sharedPref.edit().clear().apply();
+
+                UserApiClient.getInstance().logout(error -> {
+                    if (error == null) {
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                    return null;
+                });
+            }
+        });
 
     }
 
