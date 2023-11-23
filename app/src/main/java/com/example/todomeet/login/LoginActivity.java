@@ -1,12 +1,14 @@
 package com.example.todomeet.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.todomeet.MainActivity;
 import com.example.todomeet.R;
 import com.kakao.sdk.common.KakaoSdk;
@@ -29,16 +31,13 @@ public class LoginActivity extends AppCompatActivity {
                     if (meError != null) {
                         Log.e(TAG, "사용자 정보 요청 실패", meError);
                     } else {
-                        System.out.println("로그인 완료");
-                        Log.i(TAG, user.toString());
-                        {
-                            Log.i(TAG, "사용자 정보 요청 성공" +
-                                    "\n회원번호: "+user.getId() +
-                                    "\n이메일: "+user.getKakaoAccount().getEmail());
-                        }
-                        Account user1 = user.getKakaoAccount();
-                        System.out.println("사용자 계정" + user1);
-
+                        SharedPreferences sharedPref = getSharedPreferences("sharedPref", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putLong("userId", user.getId());
+                        editor.putString("userName", user.getKakaoAccount().getProfile().getNickname());
+                        editor.putString("userEmail", user.getKakaoAccount().getEmail());
+                        editor.putString("profileImageUrl", user.getKakaoAccount().getProfile().getProfileImageUrl());
+                        editor.apply();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();

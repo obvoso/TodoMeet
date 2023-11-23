@@ -28,7 +28,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         MaterialCalendarView calendarView = binding.calendarView;
-      calendarView.setSelectedDate(CalendarDay.today());
+        calendarView.setSelectedDate(CalendarDay.today());
         return root;
 
     }
