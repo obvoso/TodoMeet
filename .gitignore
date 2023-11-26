@@ -33,3 +33,4 @@ google-services.json
 *.hprof
 
 app/src/main/res/values/kakao_strings.xml
+app/src/main/res/values/server_strings.xml
