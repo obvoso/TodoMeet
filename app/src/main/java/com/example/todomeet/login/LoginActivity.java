@@ -33,6 +33,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_button);
+        SharedPreferences sharedPreferences = getSharedPreferences("accessToken", MODE_PRIVATE);
+
+        if (sharedPreferences != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         ImageButton kakaoLoginButton = findViewById(R.id.mainLoginButton);
 
@@ -43,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(getString(R.string.api_server)+"/api/auth/")
-                        .client(okHttpClient)
+//                        .client(okHttpClient)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
 

@@ -20,11 +20,9 @@ public class NetworkClient {
                         public Response intercept(Chain chain) throws IOException {
                             Request originalRequest = chain.request();
 
-                            // SharedPreferences에서 토큰을 가져옵니다.
                             String token = context.getSharedPreferences("accessToken", Context.MODE_PRIVATE)
                                     .getString("accessToken", "");
 
-                            // 토큰이 있는 경우에만 헤더에 토큰을 첨부합니다.
                             if (token != null && !token.isEmpty()) {
                                 Request newRequest = originalRequest.newBuilder()
                                         .header("Authorization", "Bearer " + token)
