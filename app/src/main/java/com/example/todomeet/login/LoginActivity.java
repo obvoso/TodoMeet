@@ -34,8 +34,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_button);
         SharedPreferences sharedPreferences = getSharedPreferences("accessToken", MODE_PRIVATE);
+        String token = sharedPreferences.getString("accessToken", null);
 
-        if (sharedPreferences != null) {
+        System.out.println("!DFDAFDSAFSAD   " + token);
+
+        if (token != null) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -46,11 +49,8 @@ public class LoginActivity extends AppCompatActivity {
         kakaoLoginButton.setOnClickListener(new View.OnClickListener() {
 
             public void postLogin(String email, String nickname, String profileImage) {
-                OkHttpClient okHttpClient = NetworkClient.getOkHttpClient(LoginActivity.this);
-
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(getString(R.string.api_server)+"/api/auth/")
-//                        .client(okHttpClient)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
 

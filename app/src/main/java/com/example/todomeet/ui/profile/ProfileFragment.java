@@ -17,8 +17,21 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.todomeet.R;
+import com.example.todomeet.api.ApiService;
+import com.example.todomeet.api.NetworkClient;
 import com.example.todomeet.login.LoginActivity;
 import com.kakao.sdk.user.UserApiClient;
+
+import java.io.IOException;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class ProfileFragment extends Fragment {
 
@@ -58,15 +71,42 @@ public class ProfileFragment extends Fragment {
         signoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sharedPref.edit().clear().apply();
+                String userEmail = sharedPref.getString("userEmail", "");
+                System.out.println("userEmail:" + userEmail);
 
-                UserApiClient.getInstance().logout(error -> {
-                    if (error == null) {
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        startActivity(intent);
-                        getActivity().finish();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(getString(R.string.api_server))
+                        .client(NetworkClient.getOkHttpClient(getContext()))
+                        .build();
+
+                ApiService service = retrofit.create(ApiService.class);
+
+                Call<Void> call = service.logout(userEmail);
+
+
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        System.out.println(response);
+                        if (response.isSuccessful()) {
+                            sharedPref.edit().clear().apply();
+                            getActivity().getApplicationContext().deleteSharedPreferences("accessToken");
+                            UserApiClient.getInstance().logout(error -> {
+                                if (error == null) {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                                return null;
+                            });
+                        }
                     }
-                    return null;
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        t.printStackTrace();
+                        System.out.println("Logout request failed: " + t.getMessage());
+                    }
                 });
             }
         });
@@ -75,4 +115,4 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-}};
+}}
