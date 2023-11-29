@@ -1,6 +1,7 @@
 package com.example.todomeet.api;
 
 import com.example.todomeet.model.JwtResponse;
+import com.example.todomeet.model.Schedule;
 import com.example.todomeet.model.User;
 
 import retrofit2.Call;
@@ -15,4 +16,7 @@ public interface ApiService {
 
     @DELETE("api")
     Call<Void> logout(@Query("userEmail") String userEmail);
+
+    @POST("project")
+    Call<Void> addSchedule(@Body Schedule schedule);
 }
