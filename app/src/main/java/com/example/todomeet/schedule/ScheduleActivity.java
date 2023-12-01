@@ -216,7 +216,14 @@ public class ScheduleActivity extends AppCompatActivity {
             }
             if (firstSelectedTime != null && lastSelectedTime != null) {
                 int lastTime = Integer.parseInt(lastSelectedTime) + 1;
-                TimeSlot timeSlot = new TimeSlot(formattedDate, firstSelectedTime, String.valueOf(lastTime), false);
+                if (firstSelectedTime.length() == 1)
+                    firstSelectedTime = "0" + firstSelectedTime;
+                if (lastTime < 10)
+                    lastSelectedTime = "0" + String.valueOf(lastTime) + ":00";
+                else if (lastTime >= 10) {
+                    lastSelectedTime = String.valueOf(lastTime) + ":00";
+                }
+                TimeSlot timeSlot = new TimeSlot(formattedDate, firstSelectedTime + ":00", lastSelectedTime);
                 timeSlots.add(timeSlot);
             }
         }

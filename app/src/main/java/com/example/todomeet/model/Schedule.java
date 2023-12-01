@@ -25,12 +25,12 @@ public class Schedule {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Schedule {");
+        sb.append("{");
         sb.append("userEmail='").append(userEmail).append('\'');
-        sb.append(", title='").append(eventName).append('\'');
+        sb.append(", eventName='").append(eventName).append('\'');
         sb.append(", memo='").append(memo).append('\'');
-        sb.append(", startDate='").append(startDay).append('\'');
-        sb.append(", endDate='").append(endDay).append('\'');
+        sb.append(", startDay='").append(startDay).append('\'');
+        sb.append(", endDay='").append(endDay).append('\'');
         sb.append(", timeSlots=[");
         for (TimeSlot timeSlot : timeSlots) {
             sb.append(timeSlot.toString()).append(", ");
