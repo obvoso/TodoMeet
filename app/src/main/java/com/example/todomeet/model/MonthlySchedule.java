@@ -54,4 +54,5 @@ public class MonthlySchedule {
     public boolean isCheck() {
         return check;
     }
+
 }

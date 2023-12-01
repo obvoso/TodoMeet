@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todomeet.R;
 import com.example.todomeet.api.ApiService;
@@ -19,9 +21,11 @@ import com.example.todomeet.databinding.FragmentHomeBinding;
 import com.example.todomeet.model.MonthlySchedule;
 import com.example.todomeet.schedule.EventDecorator;
 import com.example.todomeet.schedule.ScheduleActivity;
+import com.example.todomeet.todo.TodoAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,6 +47,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private FloatingActionButton floatingActionButton;
+    List<MonthlySchedule> dates = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -65,6 +70,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
         Calendar today = Calendar.getInstance();
         int year = today.get(Calendar.YEAR);
         int month = today.get(Calendar.MONTH) + 1;
@@ -81,7 +87,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<MonthlySchedule>> call, Response<List<MonthlySchedule>> response) {
                 if (response.isSuccessful()) {
-                    List<MonthlySchedule> dates = response.body();
+                    dates = response.body();
 
                     List<CalendarDay> calendarDays = new ArrayList<>();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -101,7 +107,7 @@ public class HomeFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
-                    calendarView.addDecorator(new EventDecorator(Color.LTGRAY, calendarDays));
+                    calendarView.addDecorator(new EventDecorator(Color.BLUE, calendarDays));
                 }
             }
 
@@ -111,9 +117,35 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        return root;
+        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
 
+            private List<MonthlySchedule> getSchedulesForDate(CalendarDay date) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String dateString = sdf.format(date.getDate());
+
+                List<MonthlySchedule> schedules = new ArrayList<>();
+                for (MonthlySchedule schedule : dates) {
+                    if (schedule.getDay().equals(dateString)) {
+                        schedules.add(schedule);
+                    }
+                }
+
+                return schedules;
+            }
+
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                List<MonthlySchedule> schedules = getSchedulesForDate(date);
+
+                RecyclerView recyclerView = binding.recyclerView;
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerView.setAdapter(new TodoAdapter(schedules));
+            }
+        });
+        return root;
     }
+
+
 
     @Override
     public void onDestroyView() {

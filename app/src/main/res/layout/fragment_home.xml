@@ -12,7 +12,7 @@
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
         app:mcv_selectionColor="@color/signature"
         app:mcv_showOtherDates="other_months"
         app:layout_constraintTop_toTopOf="parent"
@@ -39,6 +39,5 @@
         app:srcCompat="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

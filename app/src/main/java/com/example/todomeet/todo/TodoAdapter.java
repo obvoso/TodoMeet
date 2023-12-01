@@ -9,13 +9,14 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todomeet.R;
+import com.example.todomeet.model.MonthlySchedule;
 
 import java.util.List;
 
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder> {
-    private List<Todo> todos;
+    private List<MonthlySchedule> todos;
 
-    public TodoAdapter(List<Todo> todos) {
+    public TodoAdapter(List<MonthlySchedule> todos) {
         this.todos = todos;
     }
 
@@ -27,11 +28,12 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
     @Override
     public void onBindViewHolder(TodoViewHolder holder, int position) {
-        Todo todo = todos.get(position);
-        holder.checkBox.setChecked(todo.isDone());
-        holder.date.setText(todo.getDate());
-        holder.time.setText(todo.getTime());
-        holder.content.setText(todo.getContent());
+        MonthlySchedule todo = todos.get(position);
+        holder.checkBox.setChecked(todo.isCheck());
+        holder.date.setText(todo.getDay());
+        holder.startTime.setText(todo.getStartTime());
+        holder.endTime.setText(todo.getEndTime());
+        holder.content.setText(todo.getEventName());
     }
 
     @Override
@@ -42,14 +44,16 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
     static class TodoViewHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox;
         TextView date;
-        TextView time;
+        TextView startTime;
+        TextView endTime;
         TextView content;
 
         TodoViewHolder(View view) {
             super(view);
             checkBox = view.findViewById(R.id.checkBox);
             date = view.findViewById(R.id.date);
-            time = view.findViewById(R.id.time);
+            startTime = view.findViewById(R.id.startTime);
+            endTime = view.findViewById(R.id.endTime);
             content = view.findViewById(R.id.content);
         }
     }
