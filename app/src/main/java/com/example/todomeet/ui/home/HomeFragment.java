@@ -28,7 +28,6 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,6 +46,10 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private FloatingActionButton floatingActionButton;
     List<MonthlySchedule> dates = new ArrayList<>();
+    Calendar today = Calendar.getInstance();
+    int year = today.get(Calendar.YEAR);
+    int month = today.get(Calendar.MONTH) + 1;
+    MaterialCalendarView calendarView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,8 +58,7 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        MaterialCalendarView calendarView = binding.calendarView;
+        calendarView = binding.calendarView;
         calendarView.setSelectedDate(CalendarDay.today());
 
         FloatingActionButton floatingActionButton = binding.floatingActionButton;
@@ -68,11 +70,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
-
-        Calendar today = Calendar.getInstance();
-        int year = today.get(Calendar.YEAR);
-        int month = today.get(Calendar.MONTH) + 1;
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(getString(R.string.api_server))
@@ -87,26 +84,7 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<List<MonthlySchedule>> call, Response<List<MonthlySchedule>> response) {
                 if (response.isSuccessful()) {
                     dates = response.body();
-
-                    List<CalendarDay> calendarDays = new ArrayList<>();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    for (MonthlySchedule dateData : dates) {
-                        System.out.println(dateData.toString());
-                        try {
-                            Date date = sdf.parse(dateData.getDay());
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(date);
-
-                            int year = calendar.get(Calendar.YEAR);
-                            int month = calendar.get(Calendar.MONTH);
-                            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-                            calendarDays.add(CalendarDay.from(year, month, day));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    calendarView.addDecorator(new EventDecorator(Color.BLUE, calendarDays));
+                    setCalender();
                 }
             }
 
@@ -115,6 +93,8 @@ public class HomeFragment extends Fragment {
                 t.printStackTrace();
             }
         });
+
+
 
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
 
@@ -138,7 +118,7 @@ public class HomeFragment extends Fragment {
 
                 RecyclerView recyclerView = binding.recyclerView;
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                recyclerView.setAdapter(new TodoAdapter(schedules, getContext()));
+                recyclerView.setAdapter(new TodoAdapter(dates, schedules, getContext(), calendarView, HomeFragment.this));
             }
         });
         return root;
@@ -151,4 +131,25 @@ public class HomeFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+    public void setCalender() {
+        List<CalendarDay> calendarDays = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        for (MonthlySchedule dateData : dates) {
+            System.out.println(dateData.toString());
+            try {
+                Date date = sdf.parse(dateData.getDay());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                calendarDays.add(CalendarDay.from(year, month, day));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        calendarView.addDecorator(new EventDecorator(Color.BLUE, calendarDays));
+    };
 }

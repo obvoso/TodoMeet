@@ -59,6 +59,14 @@
         android:text="title"
         android:textSize="17dp"
         android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+    <ImageView
+        android:id="@+id/moreButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/three_dots"
+        android:layout_marginRight="10dp"
+        />
 </LinearLayout>

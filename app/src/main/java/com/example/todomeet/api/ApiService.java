@@ -30,4 +30,7 @@ public interface ApiService {
 
     @POST("project/check")
     Call<Void> todoChecked(@Query("projectId") int projectId, @Query("day") String day, @Query("isChecked") boolean Checked);
+
+    @DELETE("project/{projectId}")
+    Call<Void> deleteSchedule(@Path("projectId") int projectId);
 }
