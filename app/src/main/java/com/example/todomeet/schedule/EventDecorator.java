@@ -1,9 +1,5 @@
 package com.example.todomeet.schedule;
 
-import android.graphics.Color;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;

@@ -55,4 +55,11 @@ public class MonthlySchedule {
         return check;
     }
 
+    public int getProjectId() {
+        return projectId;
+    }
+    public void setCheck(boolean checked) {
+        this.check = checked;
+    }
+
 }

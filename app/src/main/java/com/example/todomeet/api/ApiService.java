@@ -27,4 +27,7 @@ public interface ApiService {
 
     @GET("schedule/{year}/{month}")
     Call<List<MonthlySchedule>> getMonthlySchedule(@Path("year") int year, @Path("month") int month);
+
+    @POST("project/check")
+    Call<Void> todoChecked(@Query("projectId") int projectId, @Query("day") String day, @Query("isChecked") boolean Checked);
 }
