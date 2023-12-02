@@ -11,6 +11,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -25,12 +26,17 @@ public interface ApiService {
     @POST("project")
     Call<Void> addSchedule(@Body Schedule schedule);
 
+    @PATCH("project/{projectId}")
+    Call<Void> updateSchedule(@Path("projectId") int projectId, @Body Schedule schedule);
+
+    @DELETE("project/{projectId}")
+    Call<Void> deleteSchedule(@Path("projectId") int projectId);
+
     @GET("schedule/{year}/{month}")
     Call<List<MonthlySchedule>> getMonthlySchedule(@Path("year") int year, @Path("month") int month);
 
     @POST("project/check")
     Call<Void> todoChecked(@Query("projectId") int projectId, @Query("day") String day, @Query("isChecked") boolean Checked);
 
-    @DELETE("project/{projectId}")
-    Call<Void> deleteSchedule(@Path("projectId") int projectId);
+
 }

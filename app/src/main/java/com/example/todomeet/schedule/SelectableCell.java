@@ -17,6 +17,7 @@ public class SelectableCell extends androidx.appcompat.widget.AppCompatTextView 
     private boolean isClickable;
     private String time;
     private CalendarDay calendarDay;
+    private  boolean isInitial;
 
     public SelectableCell(Context context) {
         super(context);
@@ -35,10 +36,12 @@ public class SelectableCell extends androidx.appcompat.widget.AppCompatTextView 
             }
         });
     }
-    public SelectableCell(Context context, CalendarDay calendarDay, String time) {
+    public SelectableCell(Context context, CalendarDay calendarDay, String time,  boolean isInitial) {
         super(context);
         this.calendarDay = calendarDay;
         this.time = time;
+        this.isInitial = isInitial;
+        isGreen = !isInitial;
 
         setBackgroundDrawable(createBorderDrawable());
 

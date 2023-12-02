@@ -1,6 +1,8 @@
 package com.example.todomeet.model;
 
-public class MonthlySchedule {
+import java.io.Serializable;
+
+public class MonthlySchedule implements Serializable {
     private int projectId;
     private String startTime;
     private String endTime;
@@ -60,6 +62,19 @@ public class MonthlySchedule {
     }
     public void setCheck(boolean checked) {
         this.check = checked;
+    }
+
+    public int getCenvertStartTime() {
+        String tmp[];
+
+        tmp = startTime.split(":", 2);
+        return Integer.parseInt(tmp[0]);
+    }
+    public int getCenvertEndTime() {
+        String tmp[];
+
+        tmp = endTime.split(":", 2);
+        return Integer.parseInt(tmp[0]);
     }
 
 }
