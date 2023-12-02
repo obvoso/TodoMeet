@@ -25,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,6 +52,19 @@ public class HomeFragment extends Fragment {
     int month = today.get(Calendar.MONTH) + 1;
     MaterialCalendarView calendarView;
 
+    private List<MonthlySchedule> getSchedulesForDate(CalendarDay date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String dateString = sdf.format(date.getDate());
+
+        List<MonthlySchedule> schedules = new ArrayList<>();
+        for (MonthlySchedule schedule : dates) {
+            if (schedule.getDay().equals(dateString)) {
+                schedules.add(schedule);
+            }
+        }
+        return schedules;
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel =
@@ -60,6 +74,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
         calendarView = binding.calendarView;
         calendarView.setSelectedDate(CalendarDay.today());
+        setOnMonthChangedListener();
 
         FloatingActionButton floatingActionButton = binding.floatingActionButton;
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +100,18 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     dates = response.body();
                     setCalender();
+
+
+                    CalendarDay today = CalendarDay.today();
+                    calendarView.setDateSelected(today, true);
+
+
+                    List<MonthlySchedule> schedules = getSchedulesForDate(today);
+
+
+                    RecyclerView recyclerView = binding.recyclerView;
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    recyclerView.setAdapter(new TodoAdapter(dates, schedules, getContext(), calendarView, HomeFragment.this));
                 }
             }
 
@@ -97,21 +124,6 @@ public class HomeFragment extends Fragment {
 
 
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
-
-            private List<MonthlySchedule> getSchedulesForDate(CalendarDay date) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                String dateString = sdf.format(date.getDate());
-
-                List<MonthlySchedule> schedules = new ArrayList<>();
-                for (MonthlySchedule schedule : dates) {
-                    if (schedule.getDay().equals(dateString)) {
-                        schedules.add(schedule);
-                    }
-                }
-
-                return schedules;
-            }
-
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
                 List<MonthlySchedule> schedules = getSchedulesForDate(date);
@@ -124,7 +136,40 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    public void setOnMonthChangedListener() {
+        calendarView.setOnMonthChangedListener(new OnMonthChangedListener() {
+            @Override
+            public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
+                // 변경된 년도와 월을 가져옵니다.
+                int year = date.getYear();
+                int month = date.getMonth() + 1; // CalendarDay의 month는 0부터 시작하므로, 1을 더해줍니다.
 
+                // 변경된 년도와 월에 해당하는 데이터를 서버에서 가져옵니다.
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(getString(R.string.api_server))
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(NetworkClient.getOkHttpClient(getContext()))
+                        .build();
+
+                ApiService apiService = retrofit.create(ApiService.class);
+                Call<List<MonthlySchedule>> call = apiService.getMonthlySchedule(year, month);
+                call.enqueue(new Callback<List<MonthlySchedule>>() {
+                    @Override
+                    public void onResponse(Call<List<MonthlySchedule>> call, Response<List<MonthlySchedule>> response) {
+                        if (response.isSuccessful()) {
+                            dates = response.body();
+                            setCalender();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<MonthlySchedule>> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
+    }
 
     @Override
     public void onDestroyView() {

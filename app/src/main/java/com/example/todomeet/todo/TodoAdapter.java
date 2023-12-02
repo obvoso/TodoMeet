@@ -128,57 +128,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
                                 deleteSchedule(todo);
                                 break;
                             case R.id.action_share:
-                                    FeedTemplate feedTemplate = new FeedTemplate(
-                                            new Content("공유된 일정을 확인해보세요.",
-                                                    "https://d34u8crftukxnk.cloudfront.net/slackpress/prod/sites/6/share_with_your_team1.ko-KR.jpg",
-                                                    new Link("https://developers.kakao.com",
-                                                            "https://developers.kakao.com"),
-                                                    "TodoMeet"
-                                            ),
-                                            new ItemContent("TodoMeet",
-                                                    "https://d34u8crftukxnk.cloudfront.net/slackpress/prod/sites/6/share_with_your_team1.ko-KR.jpg",
-                                                    todo.getEventName(),
-                                                    "https://d34u8crftukxnk.cloudfront.net/slackpress/prod/sites/6/share_with_your_team1.ko-KR.jpg",
-                                                    todo.getMemo(),
-                                                    Arrays.asList(new ItemInfo("일정", todo.getDay()),
-                                                            new ItemInfo("일정 시작", todo.getStartTime()),
-                                                            new ItemInfo("일정 종료", todo.getEndTime()))
-                                            ),
-                                            new Social(286, 45, 845),
-                                            Arrays.asList(new com.kakao.sdk.template.model.Button("웹으로 보기",
-                                                    new Link("https://developers.kakao.com",
-                                                            "https://developers.kakao.com")))
-                                    );
-
-                                if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(context)) {
-                                    String TAG = "kakaoLink()";
-
-                                    ShareClient.getInstance().shareDefault(context, feedTemplate, null, (linkResult, error) -> {
-                                        if (error != null) {
-                                            Log.e("TAG", "카카오링크 보내기 실패", error);
-                                        } else if (linkResult != null) {
-                                            Log.d(TAG, "카카오링크 보내기 성공 ${linkResult.intent}");
-                                            context.startActivity(linkResult.getIntent());
-
-                                            Log.w("TAG", "Warning Msg: " + linkResult.getWarningMsg());
-                                            Log.w("TAG", "Argument Msg: " + linkResult.getArgumentMsg());
-                                        }
-                                        return null;
-                                    });
-                                } else {
-                                    String TAG = "webKakaoLink()";
-
-                                    Uri sharerUrl = WebSharerClient.getInstance().makeDefaultUrl(feedTemplate);
-
-                                    try {
-                                        KakaoCustomTabsClient.INSTANCE.openWithDefault(context, sharerUrl);
-                                    } catch (UnsupportedOperationException e) {
-                                    }
-                                    try {
-                                        KakaoCustomTabsClient.INSTANCE.open(context, sharerUrl);
-                                    } catch (ActivityNotFoundException e) {
-                                    }
-                                }
+                                shareSchedule(getSameIdObjects(todo.getProjectId()));
                                 break;
                         }
                         return true;
@@ -189,6 +139,63 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         });
     }
 
+    private void shareSchedule(List<MonthlySchedule> selectDates) {
+        String date = selectDates.get(0).getDay();
+        String start = selectDates.get(0).getStartTime();
+        String end = selectDates.get(0).getEndTime();
+
+        if (selectDates.size() > 1) {
+            date = selectDates.get(0).getDay() + " ~ " + selectDates.get(selectDates.size() - 1).getDay();
+        }
+
+        FeedTemplate feedTemplate = new FeedTemplate(
+                new Content("공유된 일정을 확인해보세요.",
+                        "https://d34u8crftukxnk.cloudfront.net/slackpress/prod/sites/6/share_with_your_team1.ko-KR.jpg",
+                        new Link("https://developers.kakao.com",
+                                "https://developers.kakao.com"),
+                        "TodoMeet"
+                ),
+                new ItemContent("TodoMeet",
+                        "https://d34u8crftukxnk.cloudfront.net/slackpress/prod/sites/6/share_with_your_team1.ko-KR.jpg",
+                        selectDates.get(0).getEventName(),
+                        "https://d34u8crftukxnk.cloudfront.net/slackpress/prod/sites/6/share_with_your_team1.ko-KR.jpg",
+                        selectDates.get(0).getMemo(),
+                        Arrays.asList(new ItemInfo("일정", date),
+                                new ItemInfo("일정 시작", start),
+                                new ItemInfo("일정 종료", end)
+                ))
+        );
+
+        if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(context)) {
+            String TAG = "kakaoLink()";
+
+            ShareClient.getInstance().shareDefault(context, feedTemplate, null, (linkResult, error) -> {
+                if (error != null) {
+                    Log.e("TAG", "카카오링크 보내기 실패", error);
+                } else if (linkResult != null) {
+                    Log.d(TAG, "카카오링크 보내기 성공 ${linkResult.intent}");
+                    context.startActivity(linkResult.getIntent());
+
+                    Log.w("TAG", "Warning Msg: " + linkResult.getWarningMsg());
+                    Log.w("TAG", "Argument Msg: " + linkResult.getArgumentMsg());
+                }
+                return null;
+            });
+        } else {
+            String TAG = "webKakaoLink()";
+
+            Uri sharerUrl = WebSharerClient.getInstance().makeDefaultUrl(feedTemplate);
+
+            try {
+                KakaoCustomTabsClient.INSTANCE.openWithDefault(context, sharerUrl);
+            } catch (UnsupportedOperationException e) {
+            }
+            try {
+                KakaoCustomTabsClient.INSTANCE.open(context, sharerUrl);
+            } catch (ActivityNotFoundException e) {
+            }
+        }
+    }
     private void deleteSchedule(MonthlySchedule schedule) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(context.getString(R.string.api_server))
