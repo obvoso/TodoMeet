@@ -2,8 +2,6 @@ package com.example.todomeet;
 
 import android.os.Bundle;
 
-import com.example.todomeet.todo.Todo;
-import com.example.todomeet.todo.TodoAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +11,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todomeet.databinding.ActivityMainBinding;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,15 +29,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        // 투두리스트
-        List<Todo> todos = new ArrayList<>();
-        todos.add(new Todo(false, "2023-11-20", "17:00", "첫 번째 할 일"));
-        todos.add(new Todo(false, "2023-11-21", "10:00", "두 번째 할 일"));
-
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new TodoAdapter(todos));
 
         //기존 설정
         BottomNavigationView navView = findViewById(R.id.nav_view);
