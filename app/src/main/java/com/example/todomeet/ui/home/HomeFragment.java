@@ -3,6 +3,7 @@ package com.example.todomeet.ui.home;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,11 +141,10 @@ public class HomeFragment extends Fragment {
         calendarView.setOnMonthChangedListener(new OnMonthChangedListener() {
             @Override
             public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
-                // 변경된 년도와 월을 가져옵니다.
-                int year = date.getYear();
-                int month = date.getMonth() + 1; // CalendarDay의 month는 0부터 시작하므로, 1을 더해줍니다.
 
-                // 변경된 년도와 월에 해당하는 데이터를 서버에서 가져옵니다.
+                int year = date.getYear();
+                int month = date.getMonth() + 1;
+
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(getString(R.string.api_server))
                         .addConverterFactory(GsonConverterFactory.create())
